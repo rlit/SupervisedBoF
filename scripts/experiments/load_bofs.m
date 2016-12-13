@@ -29,8 +29,8 @@ for v = 1:length(VOCABS),
         str = mprintf(str, '%s', shapename);    
    
         % Load BOFs
-        load(fullfile(fullfile(BOF_DIR, chop_extension(vocabname)), shapename), 'BOF', 'SSBOF');
-        B{s} = [{BOF}, SSBOF];
+        load(fullfile(fullfile(BOF_DIR, chop_extension(vocabname)), shapename), 'BOF');
+        B{s} = [{BOF}, ];
         %load(fullfile(EVECS_DIR, shapename), 'evals'); % bar
         %B{s} = [{BOF}, SSBOF, {evals(1:SHAPE_DNA_SIZE)}];
         

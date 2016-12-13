@@ -23,9 +23,9 @@ else
 end
 
 % Precision-recall
-warning off;
+% warning off;
 pr = cumsum(p)./(cumsum(n)+cumsum(p));
-warning on;
+% warning on;
 re = cumsum(p)./sum(p);
  
 p = p/sum(p);

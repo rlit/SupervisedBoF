@@ -4,6 +4,10 @@
 % Stanford University, 2009. All Rights Reserved.
 
 
+if ~isdir(GROUNDTRUTH_DIR)
+    mkdir(GROUNDTRUTH_DIR)
+end
+
 % List of shapes
 SHAPES = dir(fullfile(DESC_DIR, FILES_TO_PROCESS));
 SHAPES = {SHAPES.name};
@@ -19,11 +23,11 @@ LABELS = { 'centaur', 'man', 'dog', 'cat', 'man', 'woman', 'horse', ...
            'camel', 'cat', 'elephant', '', 'flamingo', '', ...
            'horse', 'lion', 'other' };
 LABELS(16:max(shapeid)) = {'other'};
-LABELS = LABELS(shapeid);       
+LABELS = LABELS(shapeid);
 
 % Mask for positives, negatives and don't cares
 N = repmat(shapeid(:),[1 length(shapeid)]);
-MASK = double(N==N');    
+MASK = double(N==N');
 MASK(MASK==0) = -1;
 MASK(N~=N' & N>15 & N'>15) = 0;
 L = repmat(LABELS(:), [1 length(shapeid)]);

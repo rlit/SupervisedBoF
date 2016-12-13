@@ -16,16 +16,16 @@ fprintf(1, 'Computing descriptors...\n');
 % Select time ranges
 T = timerange(TIME_SAMPLES_PER_OCTAVE, [TIME_START TIME_END]);
 
-warning off;
-mkdir(DESC_DIR);
-warning on;    
+if ~isdir(DESC_DIR)
+    mkdir(DESC_DIR);
+end
 
 
-for s = 1:length(SHAPES), 
-    
+for s = 1:length(SHAPES),
+
     shapename = SHAPES{s};
     fprintf(1, '  %-30s \t ', shapename);
-    
+
     if SKIP_EXISTING && exist(fullfile(DESC_DIR, shapename), 'file'),
         fprintf(1, 'file already exists, skipping\n');
         nskip = nskip+1;
@@ -34,15 +34,23 @@ for s = 1:length(SHAPES),
 
     % Load eigendecomposition
     load(fullfile(EVECS_DIR, shapename), 'evecs', 'evals');
-    
-    % Compute descriptors
-    desc = scalespace(T, abs(evals), evecs);
+
+    % Compute descriptors & save result
+    switch DESC_TYPE
+        case 'HKS'
+            desc = scalespace(T, abs(evals), evecs);
+            save(fullfile(DESC_DIR, shapename), 'desc', 'T', 'DESC_TYPE');
+        case 'SIHKS'
+            desc = sihks(evecs,abs(evals));
+            save(fullfile(DESC_DIR, shapename), 'desc', 'DESC_TYPE');
+        otherwise
+            error('')
+    end
     
     % Save result
-    save(fullfile(DESC_DIR, shapename), 'desc', 'T');
     fprintf(1, 'OK\n');
     nok = nok+1;
-     
+
 end
 
 % Statistics

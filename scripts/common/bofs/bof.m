@@ -68,11 +68,13 @@ F  = w ./ repmat(ws, [size(w,1) 1]);
 BOF = sum(F,2);
 
 
-if nargin > 5 && nargout > 1,
+if nargout > 1
     SSBOF = {};
-    for t = 1:size(Kxy,3),
-        SSBOF{t} = F*Kxy(:,:,t)*F';
-        %SSBOF{t} = (FF*Kxy(:,:,t)*FF'); % / (A'*Kxy(:,:,t)*A);
+    if nargin > 5,
+        for t = 1:size(Kxy,3),
+            SSBOF{t} = F*Kxy(:,:,t)*F';
+            %SSBOF{t} = (FF*Kxy(:,:,t)*FF'); % / (A'*Kxy(:,:,t)*A);
+        end
     end
 end
 

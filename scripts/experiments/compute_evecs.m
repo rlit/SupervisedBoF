@@ -16,16 +16,15 @@ nskip = 0;
 nok   = 0;
 fprintf(1, 'Computing LB eigendecomposition...\n');
 
-warning off;
-mkdir(EVECS_DIR);
-warning on;    
+if ~isdir(EVECS_DIR)
+    mkdir(EVECS_DIR);
+end
 
+for s = 1:length(SHAPES),
 
-for s = 1:length(SHAPES), 
-    
     shapename = SHAPES{s};
     fprintf(1, '  %-30s \t ', shapename);
-    
+
     if SKIP_EXISTING && exist(fullfile(EVECS_DIR, shapename), 'file'),
         fprintf(1, 'file already exists, skipping\n');
         nskip = nskip+1;
@@ -35,7 +34,7 @@ for s = 1:length(SHAPES),
     % Load reference
     refname = [shapename(1:4) '.null.0.mat'];
     if ~strcmpi(curr_refname, refname),
-        curr_refname = refname;    
+        curr_refname = refname;
         load(fullfile(SHAPE_DIR, curr_refname));
         shape_ref = shape;
     end
@@ -44,7 +43,7 @@ for s = 1:length(SHAPES),
     load(fullfile(SHAPE_DIR, shapename));
 
     % Translation table from shape to shape_ref
-    if length(shape.X) == length(shape_ref.X), 
+    if length(shape.X) == length(shape_ref.X),
         LUT = [1:length(shape.X)]';
         idx = unique(shape.TRIV(:));
         LUT = LUT(idx);
@@ -64,9 +63,8 @@ for s = 1:length(SHAPES),
 
     % Laplacian matrices
     try
-        max_num_evecs = 200;
         num_vert = length(shape.X);
-        num_evecs = min(num_vert - 1, max_num_evecs);
+        num_evecs = min(num_vert - 1, MAX_MUN_EVECS);
         switch(LB_PARAM)
             case('cot')
                 [evecs, evals, W, A] = main_mshlp('cotangent', shape, num_evecs);
@@ -83,7 +81,7 @@ for s = 1:length(SHAPES),
             otherwise
                 assert(0);
         end
-    catch
+    catch me
         fprintf(1, 'error computing eigendecomposition, skipping\n');
         nerr = nerr+1;
         continue;
@@ -91,13 +89,13 @@ for s = 1:length(SHAPES),
 
     % Geodesic distance matrix and canonical form
     %G = fastmarch (shape);
- 
+
     % Save result
     save(fullfile(EVECS_DIR, shapename), ...
          'shape', 'LUT', 'W', 'A', 'evecs', 'evals');
     fprintf(1, 'OK\n');
     nok = nok+1;
-     
+
 end
 
 % Statistics

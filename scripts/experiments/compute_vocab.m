@@ -2,11 +2,18 @@
 %
 % (C) Copyright Alex Bronstein, Michael Bronstein, Maks Ovsjanikov,
 % Stanford University, 2009. All Rights Reserved.
+%
+% Altered by Roee Litman, Tel Aviv University, 2013
 
+
+% list of training shapes
+groundtruth_classes
+shapesToUse = DefineTrainingSet(LABELS,TRAIN_SET_NAME);
+shapesToUse = SHAPES(shapesToUse);
 
 % Descriptor dimensionality
-T = timerange(TIME_SAMPLES_PER_OCTAVE, [TIME_START TIME_END]);
-dimdesc = length(T);
+tmp = load(fullfile(DESC_DIR, SHAPES{1}), 'desc');
+dimdesc = size(tmp.desc,2);
 
 % Allocate space for descriptors
 Xp = zeros(8e5, dimdesc, 'single');
@@ -17,12 +24,14 @@ count = 0;
 nshapes = 0;
 str = '';
 
+
 for n = 1:MAX_POSITIVE_SHAPES,
 
     SHAPES = dir(fullfile(DESC_DIR, sprintf('%04d.*.mat', n)));
     SHAPES = {SHAPES.name};
 
     for ii = 1:length(SHAPES),
+        if ~ismember(SHAPES{ii},shapesToUse),continue,end
        
         % Load descriptors
         load(fullfile(DESC_DIR, SHAPES{ii}), 'desc');
@@ -45,7 +54,7 @@ mprintf(str, 'Loaded %s descriptors from %d shapes\n', format_number(count), nsh
 
 % Select a random subset
 idx = randperm(count);
-idx = idx(1:VOCAB_TRAININGSET_SIZE);
+idx = idx(1:min(VOCAB_TRAININGSET_SIZE,count));
 Xp = Xp(idx,:);
 
 % Normalize descriptors

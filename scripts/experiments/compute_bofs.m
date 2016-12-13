@@ -12,7 +12,7 @@ VOCABS = {VOCABS.name};
 SHAPES = dir(fullfile(DESC_DIR, FILES_TO_PROCESS));
 SHAPES = {SHAPES.name};
 
-IS_COMPUTE_SSBOFS = true;
+IS_COMPUTE_SSBOFS = false;
 
 % Create directories
 for v = 1:length(VOCABS),
